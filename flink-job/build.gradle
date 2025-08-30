@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.example.binance'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly "org.apache.flink:flink-java:1.20.2"
+    compileOnly "org.apache.flink:flink-streaming-java:1.20.2"
+    compileOnly "org.apache.flink:flink-connector-kafka:3.4.0-1.20"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.17.1"
+}
+
+application {
+    mainClass = 'com.example.binance.flink.SignalsJob'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
