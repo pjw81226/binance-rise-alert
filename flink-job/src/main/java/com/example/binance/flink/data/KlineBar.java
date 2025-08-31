@@ -1,4 +1,4 @@
-package com.example.binance.flink.domain;
+package com.example.binance.flink.data;
 
 public class KlineBar {
     public String symbol;
