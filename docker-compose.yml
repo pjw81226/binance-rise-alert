@@ -14,7 +14,7 @@ services:
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
       - ALLOW_PLAINTEXT_LISTENER=yes
     ports:
-      - "9094:9094"
+      - "9094:9094"   # 로컬에서 producer 테스트할 때
     volumes:
       - kafka_data:/bitnami/kafka
     networks: [knet]
@@ -31,7 +31,7 @@ services:
     networks: [knet]
 
   jobmanager:
-    image: flink:1.20.2-scala_2.12
+    image: flink:1.20.2-scala_2.12-java17
     container_name: jobmanager
     ports:
       - "8081:8081"
@@ -40,13 +40,13 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
+      - KAFKA_BOOTSTRAP=kafka:9092
     volumes:
       - ./jars:/opt/flink/usrlib
-      - ./lib/flink-connector-kafka-3.4.0-1.20.jar:/opt/flink/lib/flink-connector-kafka-3.4.0-1.20.jar:ro
     networks: [knet]
 
   taskmanager:
-    image: flink:1.20.2-scala_2.12
+    image: flink:1.20.2-scala_2.12-java17
     container_name: taskmanager
     depends_on: [jobmanager]
     command: taskmanager
@@ -55,8 +55,7 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 2
-    volumes:
-      - ./lib/flink-connector-kafka-3.4.0-1.20.jar:/opt/flink/lib/flink-connector-kafka-3.4.0-1.20.jar:ro
+      - KAFKA_BOOTSTRAP=kafka:9092
     networks: [knet]
 
 networks:
