@@ -47,28 +47,44 @@ public final class BinanceWsToKafka {
             client.newWebSocketBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
                     .buildAsync(URI.create(wsUrl), new Listener() {
+                        // 1. 메시지를 임시 저장할 버퍼(buffer)를 추가합니다.
+                        private final StringBuilder buffer = new StringBuilder();
+
                         @Override public void onOpen(WebSocket webSocket) {
                             System.out.println("WS opened: " + wsUrl);
                             webSocket.request(1);
                             Listener.super.onOpen(webSocket);
                         }
-                        @Override public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-                            String json = data.toString();
-                            try {
-                                JsonNode root = M.readTree(json);
-                                String stream = root.path("stream").asText("");
-                                String topic;
-                                if (stream.contains("kline")) topic = "binance.raw.kline";
-                                else if (stream.contains("bookTicker")) topic = "binance.raw.bookticker";
-                                else if (stream.contains("aggTrade")) topic = "binance.raw.aggtrade";
-                                else topic = "binance.raw.misc";
 
-                                producer.send(new ProducerRecord<>(topic, null, json), (md, ex) -> {
-                                    if (ex != null) ex.printStackTrace();
-                                });
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                        // 2. onText 메소드를 수정합니다.
+                        @Override public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
+                            // 들어오는 데이터 조각을 버퍼에 계속 추가합니다.
+                            buffer.append(data);
+
+                            // 메시지의 마지막 조각일 때만 아래 로직을 실행합니다.
+                            if (last) {
+                                String json = buffer.toString();
+                                try {
+                                    JsonNode root = M.readTree(json);
+                                    String stream = root.path("stream").asText("");
+                                    String topic;
+                                    if (stream.contains("kline")) topic = "binance.raw.kline";
+                                    else if (stream.contains("bookTicker")) topic = "binance.raw.bookticker";
+                                    else if (stream.contains("aggTrade")) topic = "binance.raw.aggtrade";
+                                    else topic = "binance.raw.misc";
+
+                                    producer.send(new ProducerRecord<>(topic, null, json), (md, ex) -> {
+                                        if (ex != null) ex.printStackTrace();
+                                    });
+                                } catch (Exception e) {
+                                    // 파싱에 실패한 경우, 어떤 데이터였는지 로그를 남기면 디버깅에 좋습니다.
+                                    System.err.println("Failed to parse JSON: " + json);
+                                    e.printStackTrace();
+                                }
+                                // 다음 메시지를 위해 버퍼를 비웁니다.
+                                buffer.setLength(0);
                             }
+
                             webSocket.request(1);
                             return null;
                         }
