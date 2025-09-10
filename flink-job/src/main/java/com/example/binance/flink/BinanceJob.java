@@ -21,18 +21,38 @@ public class BinanceJob {
         final String bootstrap = System.getenv().getOrDefault("KAFKA_BOOTSTRAP", "kafka:9092");
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
+        env.enableCheckpointing(30_000);
+        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(15_000);
+        env.getCheckpointConfig().setCheckpointTimeout(60_000);
+        env.getCheckpointConfig().setTolerableCheckpointFailureNumber(3);
+
         // Kafka 소스 생성
         KafkaSource<String> klineSrc = DataSourceFactory.createSource(bootstrap, "binance.raw.kline", "flink-signals-job-kline");
         KafkaSource<String> aggSrc = DataSourceFactory.createSource(bootstrap, "binance.raw.aggtrade", "flink-signals-job-agg");
         KafkaSource<String> bookSrc = DataSourceFactory.createSource(bootstrap, "binance.raw.bookticker", "flink-signals-job-book");
 
         // 각 소스를 Event 스트림으로 파싱
+        // datasource 연결 확인을 위해 로그 출력 추가
         SingleOutputStreamOperator<Event> klineEvents = env.fromSource(klineSrc, WatermarkStrategy.noWatermarks(), "kline-source")
-                .map(DataParser::parse).filter(Objects::nonNull);
+                .map(json -> {
+                    System.out.println("[KLINE] " + json);
+                    return DataParser.parse(json);
+                })
+                .filter(Objects::nonNull);
+
         SingleOutputStreamOperator<Event> aggEvents = env.fromSource(aggSrc, WatermarkStrategy.noWatermarks(), "agg-source")
-                .map(DataParser::parse).filter(Objects::nonNull);
+                .map(json -> {
+                    System.out.println("[AGG] " + json);
+                    return DataParser.parse(json);
+                })
+                .filter(Objects::nonNull);
+
         SingleOutputStreamOperator<Event> bookEvents = env.fromSource(bookSrc, WatermarkStrategy.noWatermarks(), "book-source")
-                .map(DataParser::parse).filter(Objects::nonNull);
+                .map(json -> {
+                    System.out.println("[BOOK] " + json);
+                    return DataParser.parse(json);
+                })
+                .filter(Objects::nonNull);
 
         // 모든 Event 스트림을 하나로 통합, 워터마크 적용
         WatermarkStrategy<Event> watermarkStrategy = WatermarkStrategy

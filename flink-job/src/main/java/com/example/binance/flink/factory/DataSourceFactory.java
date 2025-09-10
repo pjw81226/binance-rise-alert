@@ -12,7 +12,7 @@ public class DataSourceFactory {
                 .setBootstrapServers(bootstrap)
                 .setTopics(topic)
                 .setGroupId(groupId)
-                .setStartingOffsets(OffsetsInitializer.latest())
+                .setStartingOffsets(OffsetsInitializer.earliest())
                 .setValueOnlyDeserializer(new SimpleStringSchema())
                 .build();
     }

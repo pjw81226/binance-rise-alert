@@ -1,28 +1,40 @@
 plugins {
     id 'java'
-    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'com.example.binance'
 version = '1.0.0'
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
+    // Flink 코어는 클러스터에 있으므로 Fat-JAR에 포함하지 않음
     compileOnly "org.apache.flink:flink-java:1.20.2"
     compileOnly "org.apache.flink:flink-streaming-java:1.20.2"
-    compileOnly "org.apache.flink:flink-connector-kafka:3.4.0-1.20"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.17.1"
-}
 
-application {
-    mainClass = 'com.example.binance.flink.SignalsJob'
+    // ✅ Fat-JAR에 포함할 것들
+    implementation "org.apache.flink:flink-connector-kafka:3.4.0-1.20"
+    implementation "org.apache.kafka:kafka-clients:3.7.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.17.1"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.17.1"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.17.1"
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+shadowJar {
+    archiveBaseName.set('flink-job')
+    archiveVersion.set('1.0.0')
+    archiveClassifier.set('')     // 파일명: flink-job-1.0.0.jar
+    mergeServiceFiles()           // META-INF/services 병합
+    manifest {
+        attributes 'Main-Class': 'com.example.binance.flink.BinanceJob'
     }
 }

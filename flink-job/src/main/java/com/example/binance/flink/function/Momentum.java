@@ -47,7 +47,8 @@ public class Momentum extends KeyedProcessFunction<String, Event, String> {
         if (b == null || !b.isFinal) return;
 
         // 종가 데이터 누적
-        double[] arr = closes.value(); Integer c = closeCount.value();
+        double[] arr = closes.value();
+        Integer c = closeCount.value();
         if (arr == null) {
             arr = new double[nMom];
             c = 0;
