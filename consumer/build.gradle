@@ -26,7 +26,7 @@ java {
 }
 
 application {
-    mainClass = 'com.example.binance.DiscordAlertConsumer'
+    mainClass = 'com.example.binance.App'
 }
 
 shadowJar {
