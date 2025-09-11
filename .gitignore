@@ -6,6 +6,9 @@ gradle/wrapper/gradle-wrapper.jar
 **/src/test/**/build/
 **/gradle/
 
+consumer/src/main/java/com/example/binance/Config.java
+
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
