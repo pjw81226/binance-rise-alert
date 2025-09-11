@@ -28,7 +28,7 @@
    
 
 ## ⚙️ Installation & Usage
-
+프로젝트 실행은 Unix 기반 OS에서 가능합니다.
 해당 프로젝트를 실행하기 위해서는 Docker와 Docker Desktop이 설치되어 있어야 합니다.
 
 <br>
@@ -86,5 +86,40 @@ chmod +x run_producer.sh
 ./run_producer.sh btcusdt,ethusdt,solusdt
 ```
 
+
+## 🏗️ Architecture
+
+```mermaid
+graph LR
+    %% --- Nodes (Emoji Version) ---
+    A["📈 Binance WebSocket"]
+    B["☕️ Producer (Java)"]
+    C["🗄️ Kafka Broker"]
+    D["⚡️ Flink Job"]
+    E["🔔 Consumer (Java)"]
+    F["💬 Discord Channel"]
+
+    %% --- Subgraphs & Connections ---
+    subgraph "Local Machine"
+        A --> B
+    end
+
+    subgraph "Docker Environment"
+        B -->|kline, aggTrade...| C
+        C -- raw data --> D
+        D -- signal data --> C
+        C --> E
+    end
+
+    E -->|Alert Message| F
+
+    %% --- Styles ---
+    style A fill:#f3ba2f,stroke:#333,stroke-width:2px
+    style F fill:#5865F2,stroke:#333,stroke-width:2px
+    style B fill:#e68537,color:#fff
+    style D fill:#e67200,color:#fff
+    style E fill:#4caf50,color:#fff
+    style C fill:#231f20,color:#fff
+```
 
 
