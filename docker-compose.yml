@@ -58,6 +58,17 @@ services:
       - KAFKA_BOOTSTRAP=kafka:9092
     networks: [knet]
 
+  consumer:
+    build: ./consumer
+    container_name: consumer
+    networks:
+      - knet
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP=kafka:9092
+    restart: always
+
 networks:
   knet:
 
