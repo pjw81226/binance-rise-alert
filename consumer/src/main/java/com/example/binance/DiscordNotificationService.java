@@ -8,7 +8,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class DiscordNotificationService {
-    private final String webhookUrl = Config.getDiscordWebhookUrl();
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MessageMapper messageMapper = new MessageMapper();
@@ -23,6 +22,7 @@ public class DiscordNotificationService {
             if (discordPayload == null)
                 return;
 
+            String webhookUrl = Config.DISCORD_WEBHOOK_URL;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(webhookUrl))
                     .header("Content-Type", "application/json")
