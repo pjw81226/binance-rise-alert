@@ -47,7 +47,6 @@ public final class BinanceWsToKafka {
             client.newWebSocketBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
                     .buildAsync(URI.create(wsUrl), new Listener() {
-                        // 1. 메시지를 임시 저장할 버퍼(buffer)를 추가합니다.
                         private final StringBuilder buffer = new StringBuilder();
 
                         @Override public void onOpen(WebSocket webSocket) {
@@ -56,7 +55,6 @@ public final class BinanceWsToKafka {
                             Listener.super.onOpen(webSocket);
                         }
 
-                        // 2. onText 메소드를 수정합니다.
                         @Override public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                             // 들어오는 데이터 조각을 버퍼에 계속 추가합니다.
                             buffer.append(data);
