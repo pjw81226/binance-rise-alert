@@ -1,6 +1,9 @@
 # Binance Real-time Alert System 
 실시간 바이낸스 거래소의 거래 데이터를 수집, 특정 패턴(거래량 급증, 상승 모멘텀)을 감지하면 디스코드로 알림을 보내는 실시간 시그널 분석 시스템
 
+**개발 Notion** : https://woojangpark.notion.site/Binance-Signal-Alert-26d722ad4a2080a68059d4a950aa17fa?source=copy_link
+
+
 <img width="715" height="482" alt="image" src="https://github.com/user-attachments/assets/5eaf1313-579a-41f4-b250-c648b383e04b" />
 
    
