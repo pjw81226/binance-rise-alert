@@ -48,7 +48,6 @@ public final class BinanceWsToKafka {
                     .connectTimeout(Duration.ofSeconds(10))
                     .buildAsync(URI.create(wsUrl), new Listener() {
                         private final StringBuilder buffer = new StringBuilder();
-
                         @Override public void onOpen(WebSocket webSocket) {
                             System.out.println("WS opened: " + wsUrl);
                             webSocket.request(1);
@@ -75,7 +74,6 @@ public final class BinanceWsToKafka {
                                         if (ex != null) ex.printStackTrace();
                                     });
                                 } catch (Exception e) {
-                                    // 파싱에 실패한 경우, 어떤 데이터였는지 로그를 남기면 디버깅에 좋습니다.
                                     System.err.println("Failed to parse JSON: " + json);
                                     e.printStackTrace();
                                 }
@@ -101,3 +99,4 @@ public final class BinanceWsToKafka {
         }
     }
 }
+
