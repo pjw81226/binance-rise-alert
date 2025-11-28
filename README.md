@@ -74,7 +74,7 @@ docker compose up -d
 
 1.  웹 브라우저에서 Flink UI(`http://localhost:8081`)에 접속합니다.
 2.  Flink UI의 'Submit New Job' 메뉴에서 'Add New' 버튼을 누르고 `jars/flink-job-1.0.0.jar` 파일을 선택합니다.
-3.  제출된 job을 선택하고 Parallelism에 값을 넣고 'submit' 버튼을 누릅니다 (Docker Memory에 따라 변동, 2 추천)
+3.  제출된 job을 선택하고 Parallelism에 값을 넣고 'submit' 버튼을 누릅니다 (예: 6)
 
 
 ### 5. Producer 실행
