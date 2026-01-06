@@ -49,15 +49,12 @@ cd binance-rise-alert
 
 
 생성한 웹훅 URL을 복사합니다.
-**`consumer`** 프로젝트의 `Config.java` 파일을 직접 수정해야 합니다.
-`consumer/src/main/java/com/example/binance/Config.java` 경로의 파일을 텍스트 편집기 혹은 ide로 열어줍니다.
+이 웹훅 URL은 **환경변수 `DISCORD_WEBHOOK_URL`** 로 설정합니다. (코드에 하드코딩하지 않습니다)
 
+예시 (bash):
 
-```java
-public class Config {
-    // ... 다른 설정값들 
-    public static final String DISCORD_WEBHOOK_URL = "여기에 디스코드 웹훅 URL을 붙여주세요."; // 경고: 이 URL은 외부에 유출되지 않도록 주의하세요.
-}
+```bash
+export DISCORD_WEBHOOK_URL="여기에_디스코드_웹훅_URL"
 ```
 
 
@@ -74,7 +71,7 @@ docker compose up -d
 
 1.  웹 브라우저에서 Flink UI(`http://localhost:8081`)에 접속합니다.
 2.  Flink UI의 'Submit New Job' 메뉴에서 'Add New' 버튼을 누르고 `jars/flink-job-1.0.0.jar` 파일을 선택합니다.
-3.  제출된 job을 선택하고 Parallelism에 값을 넣고 'submit' 버튼을 누릅니다 (예: 6)
+3.  제출된 job을 선택하고 Parallelism에 값을 넣고 'submit' 버튼을 누릅니다 (예: 3, 추적하는 심볼의 개수 혹은 그 이하로 설정하는 것이 좋음)
 
 
 ### 5. Producer 실행

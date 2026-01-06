@@ -67,6 +67,7 @@ services:
       - kafka
     environment:
       - KAFKA_BOOTSTRAP=kafka:9092
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
     restart: always
 
 networks:
