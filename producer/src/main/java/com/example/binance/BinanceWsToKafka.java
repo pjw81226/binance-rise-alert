@@ -47,7 +47,18 @@ public final class BinanceWsToKafka {
         p.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap);
         p.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         p.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        p.put(ProducerConfig.ACKS_CONFIG, "1");
+        // 신뢰성/순서 보장 강화를 위한 설정
+        p.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        p.put(ProducerConfig.ACKS_CONFIG, "all");
+        p.put(ProducerConfig.RETRIES_CONFIG, String.valueOf(Integer.MAX_VALUE));
+        p.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5"); // idempotence + ordering
+        p.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "120000");
+        p.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, "30000");
+
+        // 처리량/네트워크 최적화
+        p.put(ProducerConfig.LINGER_MS_CONFIG, "20");
+        p.put(ProducerConfig.BATCH_SIZE_CONFIG, String.valueOf(64 * 1024));
+        p.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, System.getenv().getOrDefault("KAFKA_COMPRESSION", "lz4"));
 
         try (KafkaProducer<String,String> producer = new KafkaProducer<>(p)) {
             HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
